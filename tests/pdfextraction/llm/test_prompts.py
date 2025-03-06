@@ -1,4 +1,4 @@
-# this is not a test as usually understood in python, but
+# this is not a test as usually understood in python as there are no comparisons, but
 # rather scripts to check the quality of the prompts generatated
 
 from pathlib import Path
