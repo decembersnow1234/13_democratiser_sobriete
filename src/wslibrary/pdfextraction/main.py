@@ -3,7 +3,7 @@ import os
 
 import ollama
 
-from wslibrary.pdfextraction import taxonomy
+from wslibrary.domain import taxonomy
 from wslibrary.pdfextraction.llm import prompts
 from wslibrary.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
 from wslibrary.pdfextraction.pdf.pymu import get_pymupdf4llm

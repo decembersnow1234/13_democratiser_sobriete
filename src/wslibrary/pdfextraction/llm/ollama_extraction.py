@@ -3,7 +3,7 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
-from wslibrary.pdfextraction import taxonomy
+from wslibrary.domain import taxonomy
 from wslibrary.pdfextraction.llm.utils import open_file, ollama_available
 from wslibrary.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
