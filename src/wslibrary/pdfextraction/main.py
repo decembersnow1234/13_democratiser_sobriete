@@ -79,9 +79,9 @@ def main():
     print(f"Using the model: {model_name}")
     tax = TAXS.get(args.taxonomy)
 
-    if method := args.prompt_type in PROMPT_FCTS:
+    if (method := args.prompt_type) in PROMPT_FCTS:
         prompt_fct = PROMPT_FCTS.get(method)
-    
+
     else:
         raise ValueError(f"{args.prompt_type} has not been implemented")
     
@@ -95,7 +95,7 @@ def main():
     results = {}
     for pdf in pdfs:
         # get the text from the pdf
-        content = get_pymupdf4llm(os.path.join(input_path, pdf))
+        content = get_pymupdf4llm(input_path + pdf)
         text = "\n".join([c["text"] for c in content])
 
         # ini the pdf_dict & save the text
@@ -115,21 +115,21 @@ def main():
     
     # make the needed dirs and save the information
     for f in folders:
-        os.makedirs(os.path.join(output_path, f), exist_ok=True)
+        os.makedirs(output_path + f, exist_ok=True)
     
     for pdf, c in results.items():
         # save the extracted text
-        text_path = os.path.join(output_path, pdf.replace(".pdf", ".md"))
+        text_path = output_path + pdf.replace(".pdf", ".md")
         with open(text_path, "w") as f:
             f.write(c["text"])
 
         # save the made prompt
-        prompt_path = os.path.join(output_path, pdf.replace(".pdf", "_prompt.md"))
+        prompt_path = output_path + pdf.replace(".pdf", "_prompt.md")
         with open(prompt_path, "w") as f:
             f.write(c["prompt"])
 
         # save the extracted taxonomy
-        tax_path = os.path.join(output_path, pdf.replace(".pdf", f"_{model_name}.json"))
+        tax_path = output_path + pdf.replace(".pdf", f"_{model_name}.json")
         with open(tax_path, "w") as f:
             f.write(c["tax"].model_dump_json())
 
