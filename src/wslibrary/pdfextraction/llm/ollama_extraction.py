@@ -42,8 +42,6 @@ def extract_ollama_from_paper(
     if not ollama_available(model):
         raise AttributeError(f"{model} is not among the local ollama models.")
 
-    
-
     response = chat(
         messages=[
             {
