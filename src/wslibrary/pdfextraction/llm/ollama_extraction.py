@@ -38,6 +38,15 @@ def parse_args():
 def extract_ollama_from_paper(
     prompt: str, model: str, tax: BaseModel
 ) -> BaseModel:
+    """
+    Extract a taxonomy from a given prompt using the OLLAMA model.
+    Args:
+        prompt (str): The prompt to use for the extraction.
+        model (str): The model to use for the extraction.
+        tax (BaseModel): The taxonomy to use for the extraction.
+    Returns:
+        BaseModel: The extracted taxonomy (same type as the given taxonomy).
+    """
     
     if not ollama_available(model):
         raise AttributeError(f"{model} is not among the local ollama models.")
@@ -56,6 +65,7 @@ def extract_ollama_from_paper(
     paper = tax.model_validate_json(response.message.content)
 
     return paper
+
 
 def main():
     args = parse_args()
@@ -95,6 +105,7 @@ def main():
         output_path = args.output_name.split(".")[0] + ".json"
         with open(output_path, "w") as f:
             f.write(paper.model_dump_json())
+
 
 if __name__ == "__main__":
     main()

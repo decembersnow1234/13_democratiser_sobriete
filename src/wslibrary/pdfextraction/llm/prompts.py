@@ -2,6 +2,13 @@ import re
 
 
 def basic_prompt(text: str) -> str:
+    """
+    Create a prompt for the basic extraction of a scientific paper.
+    Args:
+        text (str): The text of the scientific paper.
+    Returns:
+        str: The prompt for the basic extraction.
+    """
 
     prompt = f"""
     You are given a scientific paper. The first page corresponds to the where
@@ -17,6 +24,16 @@ def basic_prompt(text: str) -> str:
 
 
 def main_parts_prompt(text: str) -> str:
+    """
+    Create a prompt for the extraction of the main parts of a scientific paper.
+    A regular expression divides the text into parts, and the prompt is created
+    using the parts that contain the introduction, results, and conclusion.
+    Args:
+        text (str): The text of the scientific paper.
+    Returns:
+        str: The prompt for the extraction of the main parts.
+    """
+    
     # extract the main sections from the pdf
     pattern_parts = r"(\*\*\d+\.(?P<title>[^*]+)\*\*[\s\S]+?)(?=\n\*\*|$)"
     sections = re.findall(pattern_parts, text)

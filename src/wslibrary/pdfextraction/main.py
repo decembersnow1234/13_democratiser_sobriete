@@ -12,8 +12,8 @@ from wslibrary.pdfextraction.pdf.pymu import get_pymupdf4llm
 OLLAMA_MODELS  = [m["model"] for m in ollama.list().get("models", [])]
 PROMPT_FCTS = {name: obj for name, obj in prompts.__dict__.items() if callable(obj)}
 TAXS = {name: obj for name, obj in taxonomy.__dict__.items() if callable(obj)}
-def get_args_parser():
 
+def get_args_parser():
     parser = argparse.ArgumentParser(description="Extract taxonomy from a paper pdf file")
     parser.add_argument("--pdf-path", type=str, help="Path to the pdf file")
     parser.add_argument(
@@ -45,10 +45,17 @@ def get_args_parser():
 
     return parser.parse_args()
 
-def get_files(path: str) -> list[str]:
-
+def get_files(path: str) -> tuple[str, list[str]]:
+    """
+    Helper function to get all the pdf paths from a given path.
+    Args:
+        path (str): The path to the pdf or the folder containing the pdfs.
+    Returns:
+        tuple[str, list[str]]: The path to the folder containing the pdfs and the list of pdfs.
+    """
     if path.endswith(".pdf"):
-        return [path.split("/")[-1]]
+        pdf_name = path.split("/")[-1]
+        return path.replace(pdf_name, ""), [pdf_name]
     
     elif os.path.isdir(path):
         pdfs = [
@@ -61,16 +68,36 @@ def get_files(path: str) -> list[str]:
         if len(pdfs) == 0:
             raise ValueError("There are no pdfs in the indicated folder.")
         
-        return pdfs
+        return path, pdfs
     
     else:
         raise ValueError("The indicated path is not a pdf or a folder.")
 
 def get_folders(pdf_files: list[str]) -> set[str]:
+    """
+    Helper function to get the folders copying the structure of the original input path.
+    Args:
+        pdf_files (list[str]): List of pdf files.
+    Returns:
+        set[str]: Set of the folders that will be created
+    
+    """
     return set(["/".join(file.split("/")[:-1]) for file in pdf_files])
 
      
 def main():
+    """
+    Main function to extract the taxonomy from a pdf files.
+    The function will find the pdfs in the indicated path, extract the text from them,
+    make a prompt from the text and extract the taxonomy from the prompt.
+    
+    For each pdf file 3 files are created in the output folder:
+    - The extracted text
+    - The prompt used for the extraction
+    - The extracted taxonomy
+
+    The output folder will have the same structure as the input folder.
+    """
     # get the arguments
     args = get_args_parser()
     input_path = args.pdf_path
@@ -86,7 +113,7 @@ def main():
         raise ValueError(f"{args.prompt_type} has not been implemented")
     
     # get the pdfs at the indicated path
-    pdfs = get_files(input_path)
+    input_path, pdfs = get_files(input_path)
 
     # get the folders that we will need to build
     folders = get_folders(pdfs)
