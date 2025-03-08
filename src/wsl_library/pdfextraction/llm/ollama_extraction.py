@@ -3,12 +3,7 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
-from wsl_library.domain import (
-    paper_taxonomy,
-    publication_taxonomy,
-    geographical_taxonomy,
-    themes_taxonomy,
-)
+from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from wsl_library.pdfextraction.llm.utils import open_file, ollama_available
 from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
@@ -16,12 +11,15 @@ from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_promp
 def parse_args():
     parser = argparse.ArgumentParser(description="Extract OLLAMA from a paper")
     parser.add_argument("--text-path", type=str, help="Path to the text file")
-    parser.add_argument("--model", type=str, help="Model to use for extraction")
+    parser.add_argument(
+        "--model", type=str, choices=OLLAMA_MODELS, help="Model to use for extraction"
+    )
     parser.add_argument(
         "--taxonomy",
         type=str,
-        default=None,
-        help="Taxonomy to use for extraction"
+        choices=list(TAXS.keys()),
+        default="PaperTaxonomy",
+        help="Taxonomy to use for extraction",
     )
     parser.add_argument(
         "--prompt",
@@ -77,18 +75,15 @@ def main():
 
     # check if the given taxonomy name is within the coded taxonomies
     if args.taxonomy:
-        callables = {
-            name: obj for name, obj in paper_taxonomy.__dict__.items() if callable(obj)
-        }
         try:
-            tax = callables[args.taxonomy]
+            tax = TAXS[args.taxonomy]
 
         except KeyError as e:
             raise KeyError(f"Taxonomy {args.taxonomy} not found") from e
 
     # if no given taxonomies, use the default one   
     else:
-        tax = paper_taxonomy.Paper
+        tax = tax = TAXS["PaperTaxonomy"]
 
     # open and process the text
     txt = open_file(args.text_path)

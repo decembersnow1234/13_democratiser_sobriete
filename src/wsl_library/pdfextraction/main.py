@@ -1,23 +1,13 @@
 import argparse
 import os
 
-import ollama
-
-from wsl_library.domain import (
-    paper_taxonomy,
-    publication_taxonomy,
-    geographical_taxonomy,
-    themes_taxonomy,
-)
+from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from wsl_library.pdfextraction.llm import prompts
 from wsl_library.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
 from wsl_library.pdfextraction.pdf.pymu import get_pymupdf4llm
 
 
-OLLAMA_MODELS = [m["model"] for m in ollama.list().get("models", [])]
 PROMPT_FCTS = {name: obj for name, obj in prompts.__dict__.items() if callable(obj)}
-TAXS = {name: obj for name, obj in paper_taxonomy.__dict__.items() if callable(obj)}
-
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description="Extract taxonomy from a paper pdf file")
@@ -29,7 +19,7 @@ def get_args_parser():
         "--taxonomy",
         type=str,
         choices=list(TAXS.keys()),
-        default="Paper",
+        default="PaperTaxonomy",
         help="Taxonomy to use for extraction",
     )
     parser.add_argument(
