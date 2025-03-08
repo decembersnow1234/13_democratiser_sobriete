@@ -3,9 +3,14 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
-from wslibrary.domain import taxonomy
-from wslibrary.pdfextraction.llm.utils import open_file, ollama_available
-from wslibrary.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
+from wsl_library.domain import (
+    paper_taxonomy,
+    publication_taxonomy,
+    geographical_taxonomy,
+    themes_taxonomy,
+)
+from wsl_library.pdfextraction.llm.utils import open_file, ollama_available
+from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
 
 def parse_args():
@@ -73,7 +78,7 @@ def main():
     # check if the given taxonomy name is within the coded taxonomies
     if args.taxonomy:
         callables = {
-            name: obj for name, obj in taxonomy.__dict__.items() if callable(obj)
+            name: obj for name, obj in paper_taxonomy.__dict__.items() if callable(obj)
         }
         try:
             tax = callables[args.taxonomy]
@@ -83,7 +88,7 @@ def main():
 
     # if no given taxonomies, use the default one   
     else:
-        tax = taxonomy.Paper
+        tax = paper_taxonomy.Paper
 
     # open and process the text
     txt = open_file(args.text_path)

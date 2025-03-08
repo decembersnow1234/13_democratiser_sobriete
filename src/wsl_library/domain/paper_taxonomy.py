@@ -1,10 +1,27 @@
 from typing import Optional, Any
-
 from pydantic import BaseModel
 
-from src.domain.taxonomy import Author, Publication_type, Science_type, Scientif_discipline, Regional_group, \
-    Geographical_scope, Studied_country, Human_needs, Studied_sector, Studied_policy_area, Natural_ressource, Wellbeing, \
-    Justice_consideration, Planetary_boundaries
+from wsl_library.domain.publication_taxonomy import (
+    Author,
+    # Author_gender,
+    Publication_type,
+    Science_type,
+    Scientif_discipline,
+)
+from src.wsl_library.domain.geographical_taxonomy import (
+    Regional_group,
+    Geographical_scope,
+    Studied_country,
+)
+from src.wsl_library.domain.themes_taxonomy import (
+    Human_needs,
+    Studied_sector,
+    Studied_policy_area,
+    Natural_ressource,
+    Wellbeing,
+    Justice_consideration,
+    Planetary_boundaries,
+)
 
 
 class PaperTaxonomy(BaseModel):
@@ -29,7 +46,6 @@ class PaperTaxonomy(BaseModel):
     justice_consideration: Optional[set[Justice_consideration]]
     planetary_boundaries: Optional[set[Planetary_boundaries]]
 
-
     ## Optional fields
     keywords: list[str]
     url: Optional[str]
@@ -48,8 +64,10 @@ class PaperTaxonomy(BaseModel):
     source_publisher_contact: Optional[str]
     source_publisher_contact_email: Optional[str]
 
+
 class OpenAlexPaper(BaseModel):
     pass
+
 
 class PaperWithText(BaseModel):
     extract_text: str
