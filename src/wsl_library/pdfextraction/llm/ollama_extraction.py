@@ -3,9 +3,9 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
-from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
-from wsl_library.pdfextraction.llm.utils import open_file, ollama_available
-from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
+from src.wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
+from src.wsl_library.pdfextraction.llm.utils import open_file, ollama_available
+from src.wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
 
 def parse_args():

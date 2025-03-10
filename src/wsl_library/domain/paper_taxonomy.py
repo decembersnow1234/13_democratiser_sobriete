@@ -1,7 +1,7 @@
 from typing import Optional, Any
 from pydantic import BaseModel
 
-from wsl_library.domain.publication_taxonomy import (
+from src.wsl_library.domain.publication_taxonomy import (
     Author,
     # Author_gender,
     Publication_type,
