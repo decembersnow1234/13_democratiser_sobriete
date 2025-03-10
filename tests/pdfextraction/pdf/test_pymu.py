@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 
-from src.wsl_library.pdfextraction.pdf.pymu import get_pymupdf4llm
+from wsl_library.pdfextraction.pdf.extract_pdf_content import get_pymupdf4llm
 
 
 HERE_PATH = Path(__file__).parent

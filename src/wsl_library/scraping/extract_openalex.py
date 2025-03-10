@@ -9,10 +9,18 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+
+from src.wsl_library.scraping.parse_metadata import (
+    get_all_results,
+    remove_unnecessary_fields,
+    clean_result_fields,
+)
+
+from src.wsl_library.infra import PDF_STORAGE_FOLDER
 # Set directory where PDFs are saved
 # !!! SPECIFY DIRECTORY PATH FROM ROOT !!!
-output_dir = r"E:\_C0D3\_RepoS\_Perso\__DataForGood\13_democratiser_sobriete\scraping\test\ingested_articles"
-dummy_dir = r"E:\_C0D3\_RepoS\_Perso\__DataForGood\13_democratiser_sobriete\scraping\test\dummy_dir"
+output_dir = os.path.join(PDF_STORAGE_FOLDER, "ingested_articles")
+dummy_dir = os.path.join(PDF_STORAGE_FOLDER, "dummy_dir")
 
 # Request OpenAlex API
 def search_openalex(query: str, cursor="*", per_page:int = 50, from_doi:bool = False, dois:list = None) -> dict:
@@ -237,3 +245,6 @@ def main(query:str = "",
                     start_from_scratch=start_from_scratch, 
                     stop_criterion=stop_criterion, 
                     maxwait=maxwait)
+
+if __name__ == "__main__":
+    main()

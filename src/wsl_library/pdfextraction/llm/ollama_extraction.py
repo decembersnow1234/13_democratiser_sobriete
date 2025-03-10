@@ -3,6 +3,8 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
+from src.wsl_library.pdfextraction.pdf import extract_pdf_content
+
 from src.wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from src.wsl_library.pdfextraction.llm.utils import open_file, ollama_available
 from src.wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
@@ -10,6 +12,7 @@ from src.wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_p
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Extract OLLAMA from a paper")
+    parser.add_argument("--pdf-md", type=bool, help="Set to True if the input is a pdf file converted to markdown, False if working with OpenAlex scraped data")
     parser.add_argument("--text-path", type=str, help="Path to the text file")
     parser.add_argument(
         "--model", type=str, choices=OLLAMA_MODELS, help="Model to use for extraction"
@@ -88,6 +91,17 @@ def main():
     # open and process the text
     txt = open_file(args.text_path)
 
+    if not args.pdf_md:
+        # Extract the PDF path from the markdown file (example at scraping/example_query_result.json)
+        # TODO : set the correct path to the pdf file
+        pdf_path = txt.split("pdf_path: ")[1].split("\n")[0]
+        # TODO : set correct parameters for the function, change usage of the result once the return object's schema is defined
+        pdf_in_md = extract_pdf_content(pdf_path)
+        all_text = ""
+        for atext in pdf_in_md:
+            all_text += atext["text"] + "\n\n"
+        txt = all_text
+
     if args.prompt == "main_parts":
         prompt = main_parts_prompt(txt)
     
@@ -103,6 +117,7 @@ def main():
     # save the result with the given name
     else:
         output_path = args.output_name.split(".")[0] + ".json"
+        print(f"Saving the extracted information to {output_path}")
         with open(output_path, "w") as f:
             f.write(paper.model_dump_json())
 

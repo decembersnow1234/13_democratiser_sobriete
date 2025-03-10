@@ -33,7 +33,7 @@ def get_args_parser():
     )
     return parser
 
-
+# TODO : add wrapper function to abscract the extraction of the content regardless of the library used, and normalise the output
 def get_pymupdf4llm(
     pdf_path: str,
     bool_write_images: bool = False,
