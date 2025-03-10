@@ -3,7 +3,7 @@ import pickle as pkl
 from copy import deepcopy
 
 
-output_dir = "/home/theo/D4G/13_democratiser_sobriete/scraping/ingested_articles/"
+output_dir = r"E:\_C0D3\_RepoS\_Perso\__DataForGood\13_democratiser_sobriete\scraping\test\ingested_articles\"
 
 def get_all_results() -> list:
     all_results = os.listdir(os.path.join(output_dir, 'pkl_files'))

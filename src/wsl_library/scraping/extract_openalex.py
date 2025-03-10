@@ -11,8 +11,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Set directory where PDFs are saved
 # !!! SPECIFY DIRECTORY PATH FROM ROOT !!!
-output_dir = "/home/theo/D4G/13_democratiser_sobriete/scraping/ingested_articles"
-dummy_dir = "/home/theo/D4G/13_democratiser_sobriete/scraping/dummy_dir"
+output_dir = r"E:\_C0D3\_RepoS\_Perso\__DataForGood\13_democratiser_sobriete\scraping\test\ingested_articles"
+dummy_dir = r"E:\_C0D3\_RepoS\_Perso\__DataForGood\13_democratiser_sobriete\scraping\test\dummy_dir"
 
 # Request OpenAlex API
 def search_openalex(query: str, cursor="*", per_page:int = 50, from_doi:bool = False, dois:list = None) -> dict:
