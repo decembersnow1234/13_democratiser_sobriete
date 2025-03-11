@@ -73,5 +73,7 @@ class OpenAlexPaper(BaseModel):
 
 
 class PaperWithText(BaseModel):
+    paper_name: str
     extract_text: str
+    metadata: Optional[str]
     embeddings: Optional[Any]
