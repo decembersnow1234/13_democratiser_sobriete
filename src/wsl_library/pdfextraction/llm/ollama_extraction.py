@@ -88,13 +88,17 @@ def main():
     else:
         tax = tax = TAXS["PaperTaxonomy"]
 
+    print("---->", "args.pdf_md", args.pdf_md)
     # open and process the text
-    txt = open_file(args.text_path)
+    if args.pdf_md:
+        txt = open_file(args.text_path)
 
     if not args.pdf_md:
         # Extract the PDF path from the markdown file (example at scraping/example_query_result.json)
         # TODO : set the correct path to the pdf file
-        pdf_path = txt.split("pdf_path: ")[1].split("\n")[0]
+        pdf_path = args.text_path
+        # pdf_path = txt.split("pdf_path: ")[1].split("\n")[0]
+
         # TODO : set correct parameters for the function, change usage of the result once the return object's schema is defined
         pdf_in_md = extract_pdf_content(pdf_path)
         all_text = ""

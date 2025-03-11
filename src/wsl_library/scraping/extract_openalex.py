@@ -3,6 +3,9 @@ import pandas as pd
 import pickle as pkl 
 import requests
 import time
+from typing import List
+
+from src.wsl_library.domain.paper_taxonomy import OpenAlexPaper
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -100,7 +103,7 @@ def download_pdf(url: str, driver: webdriver.Chrome, filename: str, maxwait=30) 
         time.sleep(1)
         # if download doesn't start for some reason, exit the function
         if not os.listdir(dummy_dir) :
-            return "Failed"
+            return None
         waittime = 0
         # fix filename by waiting for file in dummy_dir to be correctly downloaded, then rename it and put it in output_dir
         while not get_last_downloaded_file_path(dummy_dir).endswith(".pdf") :
@@ -108,11 +111,12 @@ def download_pdf(url: str, driver: webdriver.Chrome, filename: str, maxwait=30) 
             waittime += 1
             if waittime > maxwait :
                 clear_directory(dummy_dir)
-                return "Failed"
-        os.rename(get_last_downloaded_file_path(dummy_dir), f"{os.path.join(output_dir, 'pdf_files', filename)}.pdf")
-        return "Success"
+                return None
+        output_file_path = f"{os.path.join(output_dir, 'pdf_files', filename)}.pdf"
+        os.rename(get_last_downloaded_file_path(dummy_dir), output_file_path)
+        return output_file_path
     except WebDriverException :
-        return "Failed"
+        return None
 
 # Function that puts everything together to extract all pdf files and metadata from a single query
 def scrape_all_urls(driver: webdriver.Chrome, 
@@ -121,7 +125,7 @@ def scrape_all_urls(driver: webdriver.Chrome,
                     start_from_scratch:bool = False, 
                     stop_criterion=None, 
                     maxwait:int = 60, 
-                    from_dois:bool = False) -> None:
+                    from_dois:bool = False) -> dict:
     """
     - driver : chromedriver instance initialized from start_webdriver function
     - query : a query passed to the OpenAlex API if not downloading from a list of DOIs
@@ -147,6 +151,7 @@ def scrape_all_urls(driver: webdriver.Chrome,
     
     start_time = time.time()
     failed_downloads = 0
+    successfull_downloads = 0
 
     # start extraction from scratch or from a checkpoint
     if start_from_scratch :
@@ -189,11 +194,16 @@ def scrape_all_urls(driver: webdriver.Chrome,
             first_pass = False
         
         # Extraction starts here :
+        # Create dict to get with pdf filenames as keys, pkl_file_path (metadata) and pdf_file_path (optional) as values
+        scrapped_files = {}
+        
         # first save all article metadata with same filename as pdf file
         for i in range(len(query_data["results"])) :
             data = query_data["results"][i]
             filename = filenames[i]
-            with open(f"{os.path.join(output_dir, 'pkl_files', filename)}.pkl", "wb") as outfile :
+            pkl_file_path = f"{os.path.join(output_dir, 'pkl_files', filename)}.pkl"
+            scrapped_files[filename] = {"pkl_file_path" : pkl_file_path}
+            with open(pkl_file_path, "wb") as outfile :
                 pkl.dump(data, outfile)
             outfile.close()
         
@@ -206,16 +216,19 @@ def scrape_all_urls(driver: webdriver.Chrome,
             if not url :
                 failed_downloads += 1
                 continue
-            download_status = download_pdf(url, driver, filename, maxwait)
-            if download_status == "Failed" :
+            downloaded_pdf_path = download_pdf(url, driver, filename, maxwait)
+            if downloaded_pdf_path is None :
                 failed_downloads += 1
+            else :
+                successfull_downloads += 1
+                scrapped_files[filename]["pdf_file_path"] = downloaded_pdf_path
         
         # navigate to next page of query results from OpenAlex
         cursor = query_data["meta"]["next_cursor"]
         if not cursor :
             break
         all_files = os.listdir(output_dir)
-        parsed_files = [1 for item in all_files if item.endswith(".pkl")]
+        # parsed_files = [1 for item in all_files if item.endswith(".pkl")]
         doi_idx += per_page
 
         # new checkpoint to restart extraction if start_from_scratch == False
@@ -225,26 +238,46 @@ def scrape_all_urls(driver: webdriver.Chrome,
     
     print(f"""\nTotal elapsed time for {total_filecount} files : {time.time() - start_time}
               \nFailed downloads : {failed_downloads}
-              \nSuccessful downloads : {sum([1 for file in os.listdir(os.path.join(output_dir, 'pdf_files'))])}""")
-    
+              \nSuccessful downloads : {successfull_downloads}""")
+
+    return scrapped_files
+
+def get_papers(domain:str,)-> List[OpenAlexPaper]:
+    # TODO : remove criterion to get all papers
+    raw_papers_paths_dict = main(query=domain, stop_criterion=10)
+    papers = []
+    for filename, paths in raw_papers_paths_dict.items():
+        metadata = pkl.load(open(paths["pkl_file_path"], "rb"))
+        metadata_cleaned = clean_result_fields(metadata)
+        paper = OpenAlexPaper.from_dict(
+            filename,
+            paths["pkl_file_path"],
+            paths["pdf_file_path"] if "pdf_file_path" in paths.keys() else None,
+            metadata_cleaned
+            )
+        papers.append(paper)
+    return papers
+
 def main(query:str = "", 
          from_dois:bool = False,
          per_page:int = 100,
          stop_criterion = None, 
          maxwait:int = 60, 
-         start_from_scratch:bool = False) -> None:
-    
+         start_from_scratch:bool = False) -> dict:
+
     print(f"""Downloading results to path : {output_dir}.
           Make sure to give the full path (from root), otherwise automatic file renaming won't be functional.""")
 
     driver = start_webdriver()
-    scrape_all_urls(driver=driver,
+    raw_papers_paths_dict = scrape_all_urls(
+                    driver=driver,
                     query=query, 
                     from_dois=from_dois, 
                     per_page=per_page, 
                     start_from_scratch=start_from_scratch, 
                     stop_criterion=stop_criterion, 
                     maxwait=maxwait)
+    return raw_papers_paths_dict
 
 if __name__ == "__main__":
     main()

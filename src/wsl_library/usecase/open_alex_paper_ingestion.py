@@ -1,6 +1,6 @@
 from typing import List
 
-from src.domain.paper import OpenAlexPaper, PaperWithText
+from src.wsl_library.domain.paper_taxonomy import OpenAlexPaper, PaperWithText
 
 
 class OpenAlexPaperIngestionUseCase:

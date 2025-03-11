@@ -66,7 +66,10 @@ class PaperTaxonomy(BaseModel):
 
 
 class OpenAlexPaper(BaseModel):
-    pass
+    paper_name: str
+    metadata_path: str
+    pdf_path: Optional[str]
+    metadata: Optional[str]
 
 
 class PaperWithText(BaseModel):
