@@ -1,3 +1,5 @@
+import pretty_errors
+from icecream import ic
 from wsl_library.usecase.open_alex_paper_ingestion import OpenAlexPaperIngestionUseCase
 # from wsl_library.domain.paper_taxonomy import OpenAlexPaper, PaperWithText
 
@@ -8,3 +10,7 @@ from wsl_library.infra import JSON_STORAGE_FOLDER, PDF_STORAGE_FOLDER
 my_instance = OpenAlexPaperIngestionUseCase(
     OpenAlexClient, LlmClient, JSON_STORAGE_FOLDER, PDF_STORAGE_FOLDER
 )
+
+my_instance.ingest_mobility_papers()
+
+ic('Hell yeah!')

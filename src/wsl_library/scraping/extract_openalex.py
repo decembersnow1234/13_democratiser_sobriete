@@ -242,9 +242,9 @@ def scrape_all_urls(driver: webdriver.Chrome,
 
     return scrapped_files
 
-def get_papers(domain:str,)-> List[OpenAlexPaper]:
+def get_papers(domain:str)-> List[OpenAlexPaper]:
     # TODO : remove criterion to get all papers
-    raw_papers_paths_dict = main(query=domain, stop_criterion=10)
+    raw_papers_paths_dict = main(query=domain, stop_criterion=3)
     papers = []
     for filename, paths in raw_papers_paths_dict.items():
         metadata = pkl.load(open(paths["pkl_file_path"], "rb"))

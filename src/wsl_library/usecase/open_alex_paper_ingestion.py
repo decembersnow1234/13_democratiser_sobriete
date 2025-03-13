@@ -1,5 +1,5 @@
 from typing import List
-
+from icecream import ic
 from wsl_library.domain.paper_taxonomy import OpenAlexPaper, PaperWithText
 
 
@@ -13,11 +13,15 @@ class OpenAlexPaperIngestionUseCase:
 
 
     def ingest_mobility_papers(self):
-        papers_list: List[OpenAlexPaper] = self.open_alex_client.get_papers(domain="mobility")
+        papers_list: List[OpenAlexPaper] = self.open_alex_client.get_papers(domain="construction")
+        ic(papers_list)
         extracted_text_list: List[PaperWithText] = self.pdf_store.extract_text(papers_list)
+        ic(extracted_text_list)
         papers_with_taxonomy = []
         for paper in extracted_text_list:
             paper_with_taxonomy = self.llm_client.get_taxonomy_from_paper(paper)
-            papers_with_taxonomy.embeddings = self.llm_client.get_embeddings(paper.extract_text)
+            # papers_with_taxonomy.embeddings = self.llm_client.get_embeddings(paper.extract_text)
             papers_with_taxonomy.append(paper_with_taxonomy)
-        self.paper_repository.save_all(papers_with_taxonomy)
+        # self.paper_repository.save_all(papers_with_taxonomy)
+        ic(papers_with_taxonomy)
+
