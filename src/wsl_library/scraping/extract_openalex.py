@@ -14,8 +14,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 from wsl_library.scraping.parse_metadata import (
-    get_all_results,
-    remove_unnecessary_fields,
+    # get_all_results,
+    # remove_unnecessary_fields,
     clean_result_fields,
 )
 
@@ -26,12 +26,12 @@ output_dir = os.path.join(PDF_STORAGE_FOLDER, "ingested_articles")
 dummy_dir = os.path.join(PDF_STORAGE_FOLDER, "dummy_dir")
 
 # Request OpenAlex API
-def search_openalex(query: str, cursor="*", per_page:int = 50, from_doi:bool = False, dois:list = None) -> dict:
+def search_openalex(query: str, cursor="*", per_page:int = 50, from_dois:bool = False, dois:list = None) -> dict:
     
     if dois is None :
         dois = []
         
-    if from_doi :
+    if from_dois :
         pipe_separated_dois = "|".join(dois)
         params = {
             "filter": f"open_access.is_oa:true,doi:{pipe_separated_dois}",
@@ -89,7 +89,7 @@ def clear_directory(directory: str) -> None:
         os.remove(os.path.join(directory, file))
 
 # Tell driver to navigate to the given url, download the pdf and then rename the last downloaded file
-def download_pdf(url: str, driver: webdriver.Chrome, filename: str, maxwait=30) -> str:
+def download_pdf(url: str, driver: webdriver.Chrome, output_file_path: str, maxwait=30) -> str:
     def get_last_downloaded_file_path(dummy_dir) -> str:
         """ Return the last modified -in this case last downloaded- file path.
             This function is going to loop as long as the directory is empty.
@@ -112,7 +112,6 @@ def download_pdf(url: str, driver: webdriver.Chrome, filename: str, maxwait=30) 
             if waittime > maxwait :
                 clear_directory(dummy_dir)
                 return None
-        output_file_path = f"{os.path.join(output_dir, 'pdf_files', filename)}.pdf"
         os.rename(get_last_downloaded_file_path(dummy_dir), output_file_path)
         return output_file_path
     except WebDriverException :
@@ -154,7 +153,12 @@ def scrape_all_urls(driver: webdriver.Chrome,
     successfull_downloads = 0
 
     # start extraction from scratch or from a checkpoint
-    if start_from_scratch :
+    # Check if file 'download_checkpoint.pkl' exists, if not, start from scratch
+    override_start_from_scratch = False
+    if not os.path.isfile("download_checkpoint.pkl") :
+        override_start_from_scratch = True
+
+    if start_from_scratch or override_start_from_scratch:
         cursor = "*"
     else :
         download_checkpoint = pkl.load(open('download_checkpoint.pkl', 'rb'))
@@ -168,9 +172,9 @@ def scrape_all_urls(driver: webdriver.Chrome,
         assert os.path.isfile("./list_dois.csv"), "'list_dois.csv' not found in current directory"
         dois = pd.read_csv('list_dois.csv')["dois"].tolist()
         query = ""
-        doi_idx = 0
     else :
         dois = []
+    doi_idx = 0
     
     first_pass = True
     # extracting pdfs until stop_criterion is reached or until end of query is reached (last cursor)
@@ -216,19 +220,26 @@ def scrape_all_urls(driver: webdriver.Chrome,
             if not url :
                 failed_downloads += 1
                 continue
-            downloaded_pdf_path = download_pdf(url, driver, filename, maxwait)
-            if downloaded_pdf_path is None :
-                failed_downloads += 1
-            else :
-                successfull_downloads += 1
-                scrapped_files[filename]["pdf_file_path"] = downloaded_pdf_path
-        
+            ## Check here if file already exists, if so, skip download
+            pdf_file_path = os.path.join(output_dir, "pdf_files", f"{filename}.pdf")
+            if os.path.isfile(pdf_file_path):
+                continue
+            else:
+                downloaded_pdf_path = download_pdf(url, driver, pdf_file_path, maxwait)
+                if downloaded_pdf_path is None :
+                    failed_downloads += 1
+                else :
+                    successfull_downloads += 1
+                    scrapped_files[filename]["pdf_file_path"] = downloaded_pdf_path
+                    if successfull_downloads >= stop_criterion :
+                        break
+
         # navigate to next page of query results from OpenAlex
         cursor = query_data["meta"]["next_cursor"]
         if not cursor :
             break
         all_files = os.listdir(output_dir)
-        # parsed_files = [1 for item in all_files if item.endswith(".pkl")]
+        parsed_files = [1 for item in all_files if item.endswith(".pkl")]
         doi_idx += per_page
 
         # new checkpoint to restart extraction if start_from_scratch == False
@@ -249,11 +260,11 @@ def get_papers(domain:str)-> List[OpenAlexPaper]:
     for filename, paths in raw_papers_paths_dict.items():
         metadata = pkl.load(open(paths["pkl_file_path"], "rb"))
         metadata_cleaned = clean_result_fields(metadata)
-        paper = OpenAlexPaper.from_dict(
-            filename,
-            paths["pkl_file_path"],
-            paths["pdf_file_path"] if "pdf_file_path" in paths.keys() else None,
-            metadata_cleaned
+        paper = OpenAlexPaper(
+            paper_name    = filename,
+            metadata_path = paths["pkl_file_path"],
+            pdf_path      = paths["pdf_file_path"] if "pdf_file_path" in paths.keys() else None,
+            metadata      = metadata_cleaned
             )
         papers.append(paper)
     return papers

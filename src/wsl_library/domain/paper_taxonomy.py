@@ -69,7 +69,7 @@ class OpenAlexPaper(BaseModel):
     paper_name: str
     metadata_path: str
     pdf_path: Optional[str]
-    metadata: Optional[str]
+    metadata: Optional[dict]
 
 
 class PaperWithText(BaseModel):

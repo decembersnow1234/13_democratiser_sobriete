@@ -1,3 +1,7 @@
+## Temp download files
+src/tests
+download_checkpoint.pkl
+
 # From https://github.com/github/gitignore/blob/main/Python.gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
