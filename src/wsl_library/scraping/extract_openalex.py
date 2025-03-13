@@ -5,7 +5,7 @@ import requests
 import time
 from typing import List
 
-from src.wsl_library.domain.paper_taxonomy import OpenAlexPaper
+from wsl_library.domain.paper_taxonomy import OpenAlexPaper
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -13,13 +13,13 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-from src.wsl_library.scraping.parse_metadata import (
+from wsl_library.scraping.parse_metadata import (
     get_all_results,
     remove_unnecessary_fields,
     clean_result_fields,
 )
 
-from src.wsl_library.infra import PDF_STORAGE_FOLDER
+from wsl_library.infra import PDF_STORAGE_FOLDER
 # Set directory where PDFs are saved
 # !!! SPECIFY DIRECTORY PATH FROM ROOT !!!
 output_dir = os.path.join(PDF_STORAGE_FOLDER, "ingested_articles")

@@ -2,7 +2,7 @@ import os
 import pickle as pkl
 from copy import deepcopy
 
-from src.wsl_library.infra import PDF_STORAGE_FOLDER
+from wsl_library.infra import PDF_STORAGE_FOLDER
 
 output_dir = PDF_STORAGE_FOLDER
 

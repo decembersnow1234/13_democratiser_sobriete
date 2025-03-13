@@ -1,9 +1,9 @@
 import argparse
 import os
 
-from src.wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
-from src.wsl_library.pdfextraction.llm import prompts
-from src.wsl_library.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
+from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
+from wsl_library.pdfextraction.llm import prompts
+from wsl_library.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
 from wsl_library.pdfextraction.pdf.extract_pdf_content import get_pymupdf4llm
 
 

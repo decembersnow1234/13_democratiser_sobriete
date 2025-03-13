@@ -1,6 +1,6 @@
 import ollama
 
-from src.wsl_library.domain import paper_taxonomy
+from wsl_library.domain import paper_taxonomy
 
 
 # get the installed ollama models
@@ -12,5 +12,5 @@ TAXS = {
     for n, o in {
         name: obj for name, obj in paper_taxonomy.__dict__.items() if callable(obj)
     }.items()
-    if o.__module__ == "src.wsl_library.domain.paper_taxonomy"
+    if o.__module__ == "wsl_library.domain.paper_taxonomy"
 }
