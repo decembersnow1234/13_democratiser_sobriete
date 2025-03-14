@@ -20,8 +20,9 @@ class OpenAlexPaperIngestionUseCase:
         papers_with_taxonomy = []
         for pix, paper in enumerate(extracted_text_list[:2]):
             print(f"Processing paper text to fill taxonomy : {pix + 1}/{len(extracted_text_list)}")
+            # TODO : In Pydantic classes : Add the taxonomy to the input object, for enrichment in one entity
             paper_with_taxonomy: PaperTaxonomy = self.llm_client.get_taxonomy_from_paper(paper, model, prompt_type)
-            # TODO : Add the taxonomy to the input object, for enrichment in one entity
+
             # papers_with_taxonomy.embeddings = self.llm_client.get_embeddings(paper.extract_text)
             papers_with_taxonomy.append(paper_with_taxonomy)
         # self.paper_repository.save_all(papers_with_taxonomy)

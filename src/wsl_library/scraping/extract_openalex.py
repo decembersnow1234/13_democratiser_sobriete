@@ -4,8 +4,6 @@ import pickle as pkl
 import requests
 import time
 from typing import List
-
-from icecream import ic  # noqa: F401
 from wsl_library.domain.paper_taxonomy import OpenAlexPaper
 
 from selenium import webdriver

@@ -67,7 +67,6 @@ def get_pymupdf4llm(
 def extract_text(papers_list: list[OpenAlexPaper]) -> list[PaperWithText]:
     extracted_text_list = []
     for pix, paper in enumerate(papers_list):
-        # TODO : Add "print" to show the progress
         print(f"Extracting text from paper's PDF : {pix + 1}/{len(papers_list)}")
         if paper.pdf_path:
             pdf_content = get_pymupdf4llm(
@@ -76,6 +75,8 @@ def extract_text(papers_list: list[OpenAlexPaper]) -> list[PaperWithText]:
                 bool_embed_images=False,
             )
             full_text = "\n".join([c["text"] for c in pdf_content])
+            
+            # TODO : Test to fill only once the list when adjusting the PaperWithText model and fill missing fields with None
             extracted_text_list.append(
                 PaperWithText(
                     openalex_paper  = paper,
@@ -125,7 +126,7 @@ def main():
             json.dump(metadata, f, indent=4)
 
     else:
-        print(text)
+        print("\n".join([c["text"] for c in content_md]))
 
 
 if __name__ == "__main__":

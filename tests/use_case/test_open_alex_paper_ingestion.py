@@ -5,7 +5,8 @@ from wsl_library.usecase.open_alex_paper_ingestion import OpenAlexPaperIngestion
 from wsl_library.scraping import extract_openalex as OpenAlexClient
 from wsl_library.pdfextraction.llm import ollama_extraction as LlmClient
 from wsl_library.pdfextraction.pdf import extract_pdf_content as PDFExtractor
-from wsl_library.infra import JSON_STORAGE_FOLDER, PDF_STORAGE_FOLDER
+# TODO : Add the JSON_STORAGE_FOLDER to the usecase, to store the extracted taxonomy
+from wsl_library.infra import JSON_STORAGE_FOLDER, PDF_STORAGE_FOLDER # noqa: F401
 
 my_instance = OpenAlexPaperIngestionUseCase(
     OpenAlexClient, LlmClient, PDF_STORAGE_FOLDER, PDFExtractor
