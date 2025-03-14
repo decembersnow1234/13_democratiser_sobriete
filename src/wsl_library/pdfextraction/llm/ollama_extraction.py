@@ -2,7 +2,6 @@ import argparse
 
 from ollama import chat
 from pydantic import BaseModel
-from typing import List
 
 from wsl_library.pdfextraction.pdf import extract_pdf_content
 
