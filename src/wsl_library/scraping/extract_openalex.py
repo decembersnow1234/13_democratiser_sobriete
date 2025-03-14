@@ -5,6 +5,7 @@ import requests
 import time
 from typing import List
 
+from icecream import ic  # noqa: F401
 from wsl_library.domain.paper_taxonomy import OpenAlexPaper
 
 from selenium import webdriver
@@ -178,7 +179,8 @@ def scrape_all_urls(driver: webdriver.Chrome,
     
     first_pass = True
     # extracting pdfs until stop_criterion is reached or until end of query is reached (last cursor)
-    while len(parsed_files) < stop_criterion :
+    # while len(parsed_files) < stop_criterion : # TODO : check if this is the correct condition or merge with the one below
+    while successfull_downloads < stop_criterion :
         # limit of 100 dois that can be passed in one API call, creating chunks for each iteration
         if from_dois :
             assert per_page <= 100, "Can only call the API with up to 100 DOIs in a single call, set per_page to 100 or lower"
@@ -253,9 +255,9 @@ def scrape_all_urls(driver: webdriver.Chrome,
 
     return scrapped_files
 
-def get_papers(domain:str)-> List[OpenAlexPaper]:
-    # TODO : remove criterion to get all papers
-    raw_papers_paths_dict = main(query=domain, stop_criterion=3)
+def get_papers(query_requested:str, limitation:int)-> List[OpenAlexPaper]:
+    # TODO : Expose usage of other parameters
+    raw_papers_paths_dict = main(query=query_requested, stop_criterion=limitation)
     papers = []
     for filename, paths in raw_papers_paths_dict.items():
         metadata = pkl.load(open(paths["pkl_file_path"], "rb"))

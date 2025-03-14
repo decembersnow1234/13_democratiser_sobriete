@@ -68,12 +68,12 @@ class PaperTaxonomy(BaseModel):
 class OpenAlexPaper(BaseModel):
     paper_name: str
     metadata_path: str
-    pdf_path: Optional[str]
-    metadata: Optional[dict]
+    pdf_path: str | None  # required, can be None
+    metadata: dict | None = None # not required, can be None
 
-
+# Doc for Optional / Nullable : https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields
 class PaperWithText(BaseModel):
-    paper_name: str
+    openalex_paper: OpenAlexPaper
     extract_text: str
-    metadata: Optional[str]
-    embeddings: Optional[Any]
+    extrated_object: list | None = None # not required, can be None
+    embeddings: Any | None = None # not required, can be None

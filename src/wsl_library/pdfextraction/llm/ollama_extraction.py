@@ -2,6 +2,7 @@ import argparse
 
 from ollama import chat
 from pydantic import BaseModel
+from typing import List
 
 from wsl_library.pdfextraction.pdf import extract_pdf_content
 
@@ -9,6 +10,7 @@ from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from wsl_library.pdfextraction.llm.utils import open_file, ollama_available
 from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
+from wsl_library.domain.paper_taxonomy import PaperWithText, PaperTaxonomy
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Extract OLLAMA from a paper")
@@ -71,6 +73,26 @@ def extract_ollama_from_paper(
     paper = tax.model_validate_json(response.message.content)
 
     return paper
+
+
+def get_taxonomy_from_paper(
+    paper: PaperWithText,
+    model: str,
+    prompt_method: str, # TODO : Convert to Enum for reinforce validation
+) -> PaperTaxonomy:
+    match prompt_method:
+        case "basic":
+            prompt = basic_prompt(paper.extract_text)
+        case "main_parts":
+            prompt = main_parts_prompt(paper.extract_text)
+        case _:
+            prompt = basic_prompt(paper.extract_text)
+    paper = extract_ollama_from_paper(prompt, model, PaperTaxonomy)
+    return paper
+    
+
+
+
 
 
 def main():

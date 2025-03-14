@@ -8,9 +8,13 @@ from wsl_library.pdfextraction.pdf import extract_pdf_content as PDFExtractor
 from wsl_library.infra import JSON_STORAGE_FOLDER, PDF_STORAGE_FOLDER
 
 my_instance = OpenAlexPaperIngestionUseCase(
-    OpenAlexClient, LlmClient, PDFExtractor, PDF_STORAGE_FOLDER
+    OpenAlexClient, LlmClient, PDF_STORAGE_FOLDER, PDFExtractor
 )
 
-my_instance.ingest_mobility_papers()
+my_instance.ingest_papers_with_query(
+    query="construction", limit=2, model="smollm:135m"
+    , prompt_type="basic"
+    # , prompt_type="main_parts"
+)
 
 ic('Hell yeah!')
