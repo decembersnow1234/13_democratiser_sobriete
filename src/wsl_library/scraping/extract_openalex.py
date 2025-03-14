@@ -146,8 +146,8 @@ def scrape_all_urls(driver: webdriver.Chrome,
     os.makedirs(dummy_dir, exist_ok=True)
     clear_directory(dummy_dir)
 
-    all_files = os.listdir(output_dir)
-    parsed_files = [1 for item in all_files if ".pkl" in item]
+    all_files = os.listdir(os.path.join(output_dir, "pkl_files"))
+    parsed_files = len(all_files)
     
     start_time = time.time()
     failed_downloads = 0
@@ -179,8 +179,8 @@ def scrape_all_urls(driver: webdriver.Chrome,
     
     first_pass = True
     # extracting pdfs until stop_criterion is reached or until end of query is reached (last cursor)
-    # while len(parsed_files) < stop_criterion : # TODO : check if this is the correct condition or merge with the one below
-    while successfull_downloads < stop_criterion :
+    while parsed_files < stop_criterion : # TODO : check if this is the correct condition or merge with the one below
+    # while successfull_downloads < stop_criterion :
         # limit of 100 dois that can be passed in one API call, creating chunks for each iteration
         if from_dois :
             assert per_page <= 100, "Can only call the API with up to 100 DOIs in a single call, set per_page to 100 or lower"
@@ -240,8 +240,8 @@ def scrape_all_urls(driver: webdriver.Chrome,
         cursor = query_data["meta"]["next_cursor"]
         if not cursor :
             break
-        all_files = os.listdir(output_dir)
-        parsed_files = [1 for item in all_files if item.endswith(".pkl")]
+        all_files = os.listdir(os.path.join(output_dir, "pkl_files"))
+        parsed_files = len(all_files)
         doi_idx += per_page
 
         # new checkpoint to restart extraction if start_from_scratch == False

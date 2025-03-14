@@ -17,7 +17,6 @@ class OpenAlexPaperIngestionUseCase:
             query_requested=query, limitation=limit
         )
         extracted_text_list: List[PaperWithText] = self.pdf_store.extract_text(papers_list)
-        ic(extracted_text_list)
         papers_with_taxonomy = []
         for pix, paper in enumerate(extracted_text_list[:2]):
             print(f"Processing paper text to fill taxonomy : {pix + 1}/{len(extracted_text_list)}")
