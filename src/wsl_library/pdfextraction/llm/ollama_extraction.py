@@ -3,13 +3,17 @@ import argparse
 from ollama import chat
 from pydantic import BaseModel
 
+from wsl_library.pdfextraction.pdf import extract_pdf_content
+
 from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from wsl_library.pdfextraction.llm.utils import open_file, ollama_available
 from wsl_library.pdfextraction.llm.prompts import basic_prompt, main_parts_prompt
 
+from wsl_library.domain.paper_taxonomy import PaperWithText, PaperTaxonomy
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Extract OLLAMA from a paper")
+    parser.add_argument("--pdf-md", type=bool, help="Set to True if the input is a pdf file converted to markdown, False if working with OpenAlex scraped data")
     parser.add_argument("--text-path", type=str, help="Path to the text file")
     parser.add_argument(
         "--model", type=str, choices=OLLAMA_MODELS, help="Model to use for extraction"
@@ -70,6 +74,26 @@ def extract_ollama_from_paper(
     return paper
 
 
+def get_taxonomy_from_paper(
+    paper: PaperWithText,
+    model: str,
+    prompt_method: str, # TODO : Convert to Enum for reinforce validation
+) -> PaperTaxonomy:
+    match prompt_method:
+        case "basic":
+            prompt = basic_prompt(paper.extract_text)
+        case "main_parts":
+            prompt = main_parts_prompt(paper.extract_text)
+        case _:
+            prompt = basic_prompt(paper.extract_text)
+    paper = extract_ollama_from_paper(prompt, model, PaperTaxonomy)
+    return paper
+    
+
+
+
+
+
 def main():
     args = parse_args()
 
@@ -85,8 +109,23 @@ def main():
     else:
         tax = tax = TAXS["PaperTaxonomy"]
 
+    print("---->", "args.pdf_md", args.pdf_md)
     # open and process the text
-    txt = open_file(args.text_path)
+    if args.pdf_md:
+        txt = open_file(args.text_path)
+
+    if not args.pdf_md:
+        # Extract the PDF path from the markdown file (example at scraping/example_query_result.json)
+        # TODO : set the correct path to the pdf file
+        pdf_path = args.text_path
+        # pdf_path = txt.split("pdf_path: ")[1].split("\n")[0]
+
+        # TODO : set correct parameters for the function, change usage of the result once the return object's schema is defined
+        pdf_in_md = extract_pdf_content(pdf_path)
+        all_text = ""
+        for atext in pdf_in_md:
+            all_text += atext["text"] + "\n\n"
+        txt = all_text
 
     if args.prompt == "main_parts":
         prompt = main_parts_prompt(txt)
@@ -103,6 +142,7 @@ def main():
     # save the result with the given name
     else:
         output_path = args.output_name.split(".")[0] + ".json"
+        print(f"Saving the extracted information to {output_path}")
         with open(output_path, "w") as f:
             f.write(paper.model_dump_json())
 

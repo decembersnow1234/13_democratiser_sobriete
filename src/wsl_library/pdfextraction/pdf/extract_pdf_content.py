@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pymupdf4llm
 
+from wsl_library.domain.paper_taxonomy import OpenAlexPaper, PaperWithText
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description="Extract text from a PDF file.")
@@ -33,7 +34,7 @@ def get_args_parser():
     )
     return parser
 
-
+# TODO : add wrapper function to abscract the extraction of the content regardless of the library used, and normalise the output
 def get_pymupdf4llm(
     pdf_path: str,
     bool_write_images: bool = False,
@@ -62,6 +63,36 @@ def get_pymupdf4llm(
     )
     
     return content_md
+
+def extract_text(papers_list: list[OpenAlexPaper]) -> list[PaperWithText]:
+    extracted_text_list = []
+    for pix, paper in enumerate(papers_list):
+        print(f"Extracting text from paper's PDF : {pix + 1}/{len(papers_list)}")
+        if paper.pdf_path:
+            pdf_content = get_pymupdf4llm(
+                pdf_path=paper.pdf_path,
+                bool_write_images=False,
+                bool_embed_images=False,
+            )
+            full_text = "\n".join([c["text"] for c in pdf_content])
+            
+            # TODO : Test to fill only once the list when adjusting the PaperWithText model and fill missing fields with None
+            extracted_text_list.append(
+                PaperWithText(
+                    openalex_paper  = paper,
+                    extract_text    = full_text,
+                    extrated_object = pdf_content,
+                )
+            )
+        else:
+            # TODO : Extract text from the metadata
+            extracted_text_list.append(
+                PaperWithText(
+                    openalex_paper  = paper,
+                    extract_text    = "some metadata",
+                )
+            )
+    return extracted_text_list
 
 def main():
     parser = get_args_parser()
@@ -95,7 +126,7 @@ def main():
             json.dump(metadata, f, indent=4)
 
     else:
-        print(text)
+        print("\n".join([c["text"] for c in content_md]))
 
 
 if __name__ == "__main__":

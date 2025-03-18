@@ -9,7 +9,7 @@ def open_file(text_path: str) -> str:
     Returns:
         str: The content of the file
     """
-    with open(text_path, "r") as f:
+    with open(text_path, "r", encoding="utf-8") as f:
         txt = f.read()
     
     return txt

@@ -8,7 +8,9 @@ dependencies = [
     "pandas>=2.2.3",
     "pydantic>=2.10.6",
     "pymupdf4llm>=0.0.17",
+    "requests>=2.32.3",
     "selenium>=4.29.0",
+    "webdriver-manager>=4.0.2",
 ]
 
 

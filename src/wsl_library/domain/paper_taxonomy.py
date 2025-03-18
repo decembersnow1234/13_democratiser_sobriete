@@ -8,12 +8,12 @@ from wsl_library.domain.publication_taxonomy import (
     Science_type,
     Scientif_discipline,
 )
-from src.wsl_library.domain.geographical_taxonomy import (
+from wsl_library.domain.geographical_taxonomy import (
     Regional_group,
     Geographical_scope,
     Studied_country,
 )
-from src.wsl_library.domain.themes_taxonomy import (
+from wsl_library.domain.themes_taxonomy import (
     Human_needs,
     Studied_sector,
     Studied_policy_area,
@@ -66,9 +66,14 @@ class PaperTaxonomy(BaseModel):
 
 
 class OpenAlexPaper(BaseModel):
-    pass
+    paper_name: str
+    metadata_path: str
+    pdf_path: str | None  # required, can be None
+    metadata: dict | None = None # not required, can be None
 
-
+# Doc for Optional / Nullable : https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields
 class PaperWithText(BaseModel):
+    openalex_paper: OpenAlexPaper
     extract_text: str
-    embeddings: Optional[Any]
+    extrated_object: list | None = None # not required, can be None
+    embeddings: Any | None = None # not required, can be None

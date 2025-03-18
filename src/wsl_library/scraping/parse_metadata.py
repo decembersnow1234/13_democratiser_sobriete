@@ -2,8 +2,9 @@ import os
 import pickle as pkl
 from copy import deepcopy
 
+from wsl_library.infra import PDF_STORAGE_FOLDER
 
-output_dir = "/home/theo/D4G/13_democratiser_sobriete/scraping/ingested_articles/"
+output_dir = PDF_STORAGE_FOLDER
 
 def get_all_results() -> list:
     all_results = os.listdir(os.path.join(output_dir, 'pkl_files'))
@@ -129,3 +130,7 @@ def main() -> list:
         clean_result = clean_result_fields(raw_result)
         all_clean_results.append(clean_result)
     return all_clean_results
+
+
+if __name__ == "__main__":
+    main()

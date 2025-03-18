@@ -7,7 +7,8 @@ from wsl_library.domain import paper_taxonomy
 OLLAMA_MODELS = [m["model"] for m in ollama.list().get("models", [])]
 
 # get the available taxonomies
-TAXS = {n: o
+TAXS = {
+    n: o
     for n, o in {
         name: obj for name, obj in paper_taxonomy.__dict__.items() if callable(obj)
     }.items()

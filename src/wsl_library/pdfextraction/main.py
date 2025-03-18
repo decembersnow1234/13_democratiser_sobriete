@@ -4,7 +4,7 @@ import os
 from wsl_library.pdfextraction import TAXS, OLLAMA_MODELS
 from wsl_library.pdfextraction.llm import prompts
 from wsl_library.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
-from wsl_library.pdfextraction.pdf.pymu import get_pymupdf4llm
+from wsl_library.pdfextraction.pdf.extract_pdf_content import get_pymupdf4llm
 
 
 PROMPT_FCTS = {name: obj for name, obj in prompts.__dict__.items() if callable(obj)}
