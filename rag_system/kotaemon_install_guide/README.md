@@ -20,9 +20,22 @@ Si vous souhaitez utiliser le GPU de votre ordinateur, suivez scrupuleusement la
 
 Rien à faire, tout est déjà là : le fichier docker compose a été créé pour éviter de vous embêter la life...
 
+Il faut seulement éventuellement être attentif aux mappings de volumes.
+
+Par ailleur, la commande qui lance l'app Kotaemon "./launch.sh" a été volontairement paralysée pour pouvoir développer sur l'app, en codant les différentes librairies kotaemon, ktem + nos librairies customs, sans avoir à stop/restart le container Kotaemon.
+
+Pour lancer l'app Kotaemon en test, il faut donc rentrer à l'intérieur du container :
+
+Depuis le dossier 'rag_system' où se trouve le docker compose :
+
+<code> docker compose exec -it kotaemon -p 11434:11434 bash </code>
+
+Puis lancer l'app avec la commande : ./launch.sh
+
+(ou les scripts customs dans le dossier pipeline_scripts mappé à l'intérieur du container si besoin)
 
 
-### Repartir du projet kotaemon initial (si besoin)
+### Repartir du projet kotaemon initial (non conseillé)
 
 Créer votre dossier de travail "kotaemon" où vous le souhaitez...
 

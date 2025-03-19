@@ -12,7 +12,6 @@ services:
       - '7860:7860'
     volumes:
       - './kotaemon/flowsettings.py:/app/flowsettings.py'
-      - './kotaemon/flowsettings_add.py:/app/flowsettings_add.py'
       - './kotaemon/libs:/app/libs'
       - './kotaemon/ktem_app_data:/app/ktem_app_data'
       - './pipeline_scripts/:/app/pipeline_scripts'

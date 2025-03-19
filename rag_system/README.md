@@ -1,4 +1,14 @@
-#### Kotaemon Project : a git subtree folder
+#### Kotaemon Project : a DATA4GOOD git subtree folder
+
+
+The folder 'kotaemon' is a git subtree folder, that can be synchronized with the 'root' common project : https://github.com/dataforgoodfr/kotaemon#
+
+This 'root' project hosts all the common / generic tools built by Data4Good.
+
+When you make a code change in your 'local' project, all the code alterations that are included in the 'root' project (the 'kotaemon' folder) could be push to contribute to the 'root' subtree project. (by the use of your intermediary branch like "13_sobriety_version")
+
+Inversely, you can regularly pull the 'root' main/branch changes.
+
 #### Synchronisation commands
 
 To pull the recent changes of your branch / or main branch, from the 'root' common project : https://github.com/dataforgoodfr/kotaemon#
