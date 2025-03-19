@@ -10,6 +10,7 @@ from kotaemon.llms.chats.openai import ChatOpenAI
 from kotaemon.storages import LanceDBDocumentStore
 from kotaemon.storages.vectorstores.qdrant import QdrantVectorStore
 
+#TODO : make a generic version of it
 from wsl_library.pdfextraction import TAXS
 from wsl_library.pdfextraction.llm import prompts
 from wsl_library.pdfextraction.llm.ollama_extraction import extract_ollama_from_paper
