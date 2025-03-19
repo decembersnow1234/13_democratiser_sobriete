@@ -96,7 +96,7 @@ class IndexingPipeline(VectorIndexing):
                                                         inference_type = 'scientific')
         
 
-        metadatas_json = metadatas.model_dump_json()
+        metadatas_json = metadatas.model_dump()
     
         super().run(text=[text_md], metadatas=[metadatas_json])
 

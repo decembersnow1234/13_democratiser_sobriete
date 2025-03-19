@@ -99,7 +99,7 @@ class IndexingPipeline(VectorIndexing):
                                                         inference_type = 'scientific')
         
 
-        metadatas_json = metadatas.model_dump_json()
+        metadatas_json = metadatas.model_dump()
     
         super().run(text=[text_md], metadatas=[metadatas_json])
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     indexing_pipeline.run("1-s2.0-S2211467X23001748-main.pdf")
     indexing_pipeline.run("1-s2.0-S0094119008001095-main.pdf")
 
-    
+
 
     # Just for test
 
