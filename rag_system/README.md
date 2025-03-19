@@ -32,11 +32,11 @@ Be Careful ! All changes must be 'generics' to satisfy all projects ... (or expl
 
 Loccaly, you can create a git alias for the commands above ... Example (with the main branch of the subtree Project) for the pull command :
 
-```git config --global alias.st-[MY_BRANCH]-pull 'git subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] --squash' ```
+```git config --global alias.st-[MY_BRANCH]-pull 'subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] --squash' ```
 
 and for the push command : 
 
-```git config --global alias.st-[MY_BRANCH]-push 'git subtree push --prefix=rag_system/kotaemon  https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] ' ```
+```git config --global alias.st-[MY_BRANCH]-push 'subtree push --prefix=rag_system/kotaemon  https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] ' ```
 
 Now, you can use these alias :
 
