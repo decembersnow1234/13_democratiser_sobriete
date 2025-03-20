@@ -9,12 +9,6 @@ When you make a code change in your 'local' project, all the code alterations th
 
 Inversely, you can regularly pull the 'root' main/branch changes.
 
-#### Install synchro git subtree for kotaemon
-
-Locally, you have (just one time) to set up your git subtree:
-
-```git subtree add --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git```
-
 
 #### Synchronisation commands
 
