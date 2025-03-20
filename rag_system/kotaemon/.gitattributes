@@ -1,0 +1,2 @@
+*.bat text eol=crlf
+libs/taxonomy/* merge=ours
