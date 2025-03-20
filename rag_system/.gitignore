@@ -1,8 +1,3 @@
 .theflow/*
 ollama
 qdrant_data
-
-# to allow merge on main branch in team repo, ignore the .gitattributes
-# (this .gitattributes inside the git subtree kotaemon repo says : merge not allowed for the 'taxonomy' file)
-
-kotaemon/.gitattributes
