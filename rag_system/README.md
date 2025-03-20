@@ -9,11 +9,20 @@ When you make a code change in your 'local' project, all the code alterations th
 
 Inversely, you can regularly pull the 'root' main/branch changes.
 
+#### Install synchro git subtree for kotaemon
+
+Locally, you have (just one time) to set up your git subtree:
+
+```git subtree add --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git```
+
+
 #### Synchronisation commands
 
-To pull the recent changes of your branch / or main branch, from the 'root' common project : https://github.com/dataforgoodfr/kotaemon#
+To pull the recent changes of your branch / or MAIN branch, from the 'root' common project : https://github.com/dataforgoodfr/kotaemon#
 
-```git subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] --squash```
+(of course, these are the MAIN branch changes that you commonly want to pull... The changes of your branch should be already shared within you team repo github of the project)
+
+```git subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH or MAIN] --squash```
 
 Contributing to the "root" project :
 
@@ -23,20 +32,22 @@ To contribute within your branch :
 
 Replace [MY_BRANCH] with your branch version : 13_ecoskills_version, 13_sobriety_version ...
 
-And if the changes are very generics => Do a Merge Request.
+And if the changes are very generics => Do a Merge Request to the MAIN branch with GitHub.
 
 Be Careful ! All changes must be 'generics' to satisfy all projects ... (or explicitly written as '_example' )
+
+... Please, Exclude "taxonomy" libs from your MR !...
 
 
 ###### Little Tips
 
 Loccaly, you can create a git alias for the commands above ... Example (with the main branch of the subtree Project) for the pull command :
 
-```git config --global alias.st-[MY_BRANCH]-pull 'subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] --squash' ```
+```git config --global alias.st-[MY_BRANCH or MAIN]-pull 'subtree pull --prefix=rag_system/kotaemon https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH or MAIN] --squash' ```
 
 and for the push command : 
 
-```git config --global alias.st-[MY_BRANCH]-push 'subtree push --prefix=rag_system/kotaemon  https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] ' ```
+```git config --global alias.st-[MY_BRANCH or MAIN]-push 'subtree push --prefix=rag_system/kotaemon  https://github.com/dataforgoodfr/kotaemon.git [MY_BRANCH] ' ```
 
 Now, you can use these alias :
 
