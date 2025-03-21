@@ -11,16 +11,6 @@ from taxonomy.publication_taxonomy import (
 from taxonomy.geographical_taxonomy import (
     Regional_group,
     Geographical_scope,
-    Studied_country,
-)
-from taxonomy.themes_taxonomy import (
-    Human_needs,
-    Studied_sector,
-    Studied_policy_area,
-    Natural_ressource,
-    Wellbeing,
-    Justice_consideration,
-    Planetary_boundaries,
 )
 
 
@@ -37,14 +27,14 @@ class PaperTaxonomy(BaseModel):
     scientific_discipline: Scientif_discipline
     regional_group: Regional_group
     geographical_scope: Geographical_scope
-    studied_country: set[Studied_country]
-    human_needs: set[Human_needs]
-    studied_sector: set[Studied_sector]
-    studied_policy_area: set[Studied_policy_area]
-    natural_ressource: set[Natural_ressource]
-    wellbeing: set[Wellbeing]
-    justice_consideration: Optional[set[Justice_consideration]]
-    planetary_boundaries: Optional[set[Planetary_boundaries]]
+    #studied_country: set[Studied_country]
+    #human_needs: set[Human_needs]
+    #studied_sector: set[Studied_sector]
+    #studied_policy_area: set[Studied_policy_area]
+    #natural_ressource: set[Natural_ressource]
+    #wellbeing: set[Wellbeing]
+    #justice_consideration: Optional[set[Justice_consideration]]
+    #planetary_boundaries: Optional[set[Planetary_boundaries]]
 
     ## Optional fields
     keywords: list[str]
