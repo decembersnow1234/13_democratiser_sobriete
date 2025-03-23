@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 from kotaemon.base import Document, Param, lazy
@@ -85,7 +86,9 @@ class IndexingPipeline(VectorIndexing):
         Return nothing
         """
 
-        text_md = self.pdf_extraction_block.run(self.pdf_path + pdf_name, method="group_all")
+        text_md = self.pdf_extraction_block.run(
+            Path(self.pdf_path, pdf_name), method="group_all"
+        )
 
         metadatas = self.metadatas_llm_inference_block.run(
             text_md, doc_type="entire_doc", inference_type="scientific"
@@ -106,7 +109,9 @@ class RetrievePipeline(BaseComponent):
     """
     from simple_pipeline.py, a better RAG pipeline must exist somewhere
 
-
+    TODO:
+    - Reranking support ? (rag_system/kotaemon/libs/kotaemon/kotaemon/indices/rankings)
+    - Citation/QA support ? (rag_system/kotaemon/libs/kotaemon/kotaemon/indices/qa)
     """
 
     llm: ChatOpenAI = ChatOpenAI.withx(
