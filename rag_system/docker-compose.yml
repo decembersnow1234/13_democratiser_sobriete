@@ -8,6 +8,9 @@ services:
     environment:
       GRADIO_SERVER_NAME: 0.0.0.0
       GRADIO_SERVER_PORT: 7860
+      OLLAMA_DEPLOYMENT: docker
+      VECTOR_STORE_DEPLOYMENT: docker
+      # PDF_FOLDER: 
     ports:
       - '7860:7860'
     volumes:

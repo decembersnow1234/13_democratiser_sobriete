@@ -1,5 +1,5 @@
+import os
 from typing import List
-
 
 from kotaemon.base import Document, Param, lazy
 from kotaemon.base.component import BaseComponent
@@ -10,18 +10,16 @@ from kotaemon.indices.vectorindex import VectorRetrieval
 from kotaemon.llms.chats.openai import ChatOpenAI
 from kotaemon.storages import LanceDBDocumentStore
 from kotaemon.storages.vectorstores.qdrant import QdrantVectorStore
-
 from pipelineblocks.extraction.pdfextractionblock.pdf_to_markdown import (
     PdfExtractionToMarkdownBlock,
 )
 from pipelineblocks.llm.ingestionblock.openai import OpenAIMetadatasLLMInference
-
 from taxonomy.paper_taxonomy import PaperTaxonomy
 
-OLLAMA_DEPLOYMENT = "docker"
-VECTOR_STORE_DEPLOYMENT = "docker"
+OLLAMA_DEPLOYMENT = os.getenv("OLLAMA_DEPLOYMENT", "docker")
+VECTOR_STORE_DEPLOYMENT = os.getenv("VECTOR_STORE_DEPLOYMENT", "docker")
 
-PDF_FOLDER = "./pipeline_scripts/pdf_test/"
+PDF_FOLDER = os.getenv("PDF_FOLDER", "./pipeline_scripts/pdf_test/")
 
 # ---- Do not touch (temporary) ------------- #
 
