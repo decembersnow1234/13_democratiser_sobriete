@@ -165,3 +165,7 @@ cython_debug/
 
 # Precommit hooks: ruff cache
 .ruff_cache
+
+# the flow stuff
+.theflow
+kotaemon-custom/kotaemon/ktem_app_data
