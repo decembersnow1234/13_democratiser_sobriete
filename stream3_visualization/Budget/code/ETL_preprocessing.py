@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 # Constants
-DATA_DIR = '/Users/louistronel/Desktop/D4G_WSL/13_democratiser_sobriete-1/stream3_visualization/Budget/Data'
-OUTPUT_DIR = '/Users/louistronel/Desktop/D4G_WSL/13_democratiser_sobriete-1/stream3_visualization/Budget/Output'
+DATA_DIR = 'stream3_visualization/Budget/Data'
+OUTPUT_DIR = 'stream3_visualization/Budget/Output'
 
 def load_iso_codes_mapping():
     """Load and process ISO codes mapping data."""
