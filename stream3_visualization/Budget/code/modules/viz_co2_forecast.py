@@ -7,19 +7,48 @@ load_dotenv()
 OUTPUT_DIR = os.getenv("OUTPUT_DIR")
 
 def import_data():
-    history_path = f"{OUTPUT_DIR}/combined_data.csv"
-    forecast_path = f"{OUTPUT_DIR}/forecast_data.csv"
-    parameters_path = f"{OUTPUT_DIR}/scenario_parameters.csv"
+    history_path = os.path.join(OUTPUT_DIR, "combined_data.csv")
+    forecast_path = os.path.join(OUTPUT_DIR, "forecast_data.csv")
+    parameters_path = os.path.join(OUTPUT_DIR, "scenario_parameters.csv")
+
+    print(f"Attempting to read files from: {OUTPUT_DIR}")
+    print(f"History file path: {history_path}")
+    print(f"Forecast file path: {forecast_path}")
+    print(f"Parameters file path: {parameters_path}")
 
     try:
+        # Check if files exist
+        if not os.path.exists(history_path):
+            print(f"Error: History file does not exist: {history_path}")
+            return None, None, None
+        if not os.path.exists(forecast_path):
+            print(f"Error: Forecast file does not exist: {forecast_path}")
+            return None, None, None
+        if not os.path.exists(parameters_path):
+            print(f"Error: Parameters file does not exist: {parameters_path}")
+            return None, None, None
+
+        # Check if files are empty
+        if os.path.getsize(history_path) == 0:
+            print(f"Error: History file is empty: {history_path}")
+            return None, None, None
+        if os.path.getsize(forecast_path) == 0:
+            print(f"Error: Forecast file is empty: {forecast_path}")
+            return None, None, None
+        if os.path.getsize(parameters_path) == 0:
+            print(f"Error: Parameters file is empty: {parameters_path}")
+            return None, None, None
+
+        # Read the files
         history = pd.read_csv(history_path)
         forecast = pd.read_csv(forecast_path)
         parameters = pd.read_csv(parameters_path)
-    except FileNotFoundError:
-        print("Error: One or more files are missing.")
-        return None, None, None
 
-    return history, forecast, parameters
+        print("Files read successfully!")
+        return history, forecast, parameters
+    except Exception as e:
+        print(f"Error reading files: {e}")
+        return None, None, None
 
 def process_forecast_data():
     history, forecast, parameters = import_data()
@@ -40,42 +69,35 @@ def concat(to_be_concat):
 
 if __name__ == "__main__":
     history, forecast, parameters = import_data()
-    
+
     if history is not None and forecast is not None and parameters is not None:
-        #print(history.head())
-        print(f"Emission History after import : ",history.columns)
-        history2=history[['ISO2','Country', 'Region','Year',    'Emissions_scope', 
-        'Annual_CO2_emissions_Mt',
-       'Emissions_per_capita_ton', 'Cumulative_CO2_emissions_Mt',
-       'Cumulative_population', 'Share_of_cumulative_population']]
-        print(f"Emission History after reshape : ",history2.columns)
-        #print(forecast.head())
-        print(f"Forecast after import: ",forecast.columns)
-        forecast['Annual_CO2_emissions_Mt']=forecast['Forecasted_emissions_Mt']
-        forecast2=forecast.drop(columns='Forecasted_emissions_Mt')
-        print(f"Forecast after reshape: ",forecast2.columns)
-        #print(parameters.head())
-        print(f"Parameters after import : ",parameters.columns)
-        parameters=parameters[['ISO2', 'Country', 'Region', 'Emissions_scope', 'Warming_scenario',  
-       'Probability_of_reach', 'Budget_source', 'Budget_distribution_scenario',      
-              
-       'Share_of_cumulative_population',
-       'Population_2050', 'Share_of_total_population_2050',
-        'scenario_id']]
-        print(f"Parameters after reshape: ",parameters.columns)
+        print(f"Emission History after import: {history.columns}")
+        history2 = history[['ISO2', 'Country', 'Region', 'Year', 'Emissions_scope',
+                            'Annual_CO2_emissions_Mt', 'Emissions_per_capita_ton',
+                            'Cumulative_CO2_emissions_Mt']]
+        print(f"Emission History after reshape: {history2.columns}")
+
+        print(f"Forecast after import: {forecast.columns}")
+        forecast['Annual_CO2_emissions_Mt'] = forecast['Forecasted_emissions_Mt']
+        forecast2 = forecast.drop(columns='Forecasted_emissions_Mt')
+        print(f"Forecast after reshape: {forecast2.columns}")
+
+        print(f"Parameters after import: {parameters.columns}")
+        parameters = parameters[['ISO2', 'Country', 'Region', 'Emissions_scope', 'Warming_scenario',
+                                 'Probability_of_reach', 'Budget_source', 'Budget_distribution_scenario',
+                                 'scenario_id']]
+        print(f"Parameters after reshape: {parameters.columns}")
+
         merged = process_forecast_data()
-        to_be_concat=[merged,history2]
-        result=concat(to_be_concat)
-        #print(merged.head()) if merged is not None else print("No merged data available.")
-        print(f"Viz history forecast ",result.columns)
-        categorical_cols = [ 'Warming_scenario', 'Probability_of_reach',
-        'Budget_source', 'Budget_distribution_scenario',"Neutrality_year"]
+        to_be_concat = [merged, history2]
+        result = concat(to_be_concat)
+        print(f"Viz history forecast: {result.columns}")
+
+        categorical_cols = ['Warming_scenario', 'Probability_of_reach',
+                            'Budget_source', 'Budget_distribution_scenario', "Neutrality_year"]
 
         for col in categorical_cols:
             result[col] = result[col].astype(str).str.strip()
 
-        #print(result.dtypes)
-        viz_history_forecast_df = result.to_csv(os.path.join(OUTPUT_DIR, "viz_history_forecast_data.csv"),index=False)
+        viz_history_forecast_df = result.to_csv(os.path.join(OUTPUT_DIR, "viz_history_forecast_data.csv"), index=False)
         print(f"viz_history_forecast.csv ready")
-        
-
