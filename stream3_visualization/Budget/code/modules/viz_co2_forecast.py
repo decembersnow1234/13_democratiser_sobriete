@@ -68,5 +68,14 @@ if __name__ == "__main__":
         result=concat(to_be_concat)
         #print(merged.head()) if merged is not None else print("No merged data available.")
         print(f"Viz history forecast ",result.columns)
+        categorical_cols = [ 'Warming_scenario', 'Probability_of_reach',
+        'Budget_source', 'Budget_distribution_scenario',"Neutrality_year"]
+
+        for col in categorical_cols:
+            result[col] = result[col].astype(str).str.strip()
+
+        #print(result.dtypes)
         viz_history_forecast_df = result.to_csv(os.path.join(OUTPUT_DIR, "viz_history_forecast_data.csv"),index=False)
         print(f"viz_history_forecast.csv ready")
+        
+
