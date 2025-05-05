@@ -1,7 +1,14 @@
-import pandas as pd
-from config import paths
-from dotenv import load_dotenv
+import sys
 import os
+
+# Add the parent directory to the path (using raw string for the file path)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), r'..')))
+
+import pandas as pd
+from config import filenames
+
+from dotenv import load_dotenv
+
 load_dotenv()
 
 OUTPUT_DIR = os.getenv("OUTPUT_DIR")
@@ -20,20 +27,21 @@ class LoadData:
         if os.path.getsize(path) == 0:
             raise ValueError(f"❌ File is empty: {path}")
         return pd.read_csv(path, low_memory=False)
+    
     @staticmethod
-    def load_iso_codes_mapping(DATA_DIR, iso_code_map):
+    def load_iso_codes_mapping(iso_code_map):
         """Load and process ISO codes mapping data."""
         print("Loading ISO codes mapping data...")
-        iso_mapping = pd.read_excel(f"{DATA_DIR}/{iso_code_map}")
+        iso_mapping = pd.read_excel(iso_code_map)
         iso_mapping.rename(columns={'Alpha-2 code': 'ISO2', 'Alpha-3 code': 'ISO3'}, inplace=True)
-        iso_mapping['ISO2'] = iso_mapping['ISO2'].fillna('')
+        iso_mapping['ISO2'] = iso_mapping['ISO2'].fillna('')  # Fill NaN values with empty strings
         return iso_mapping[['ISO3', 'ISO2']]
-
+    
     @staticmethod
-    def load_ipcc_regions(DATA_DIR, iso_country_code):
+    def load_ipcc_regions(iso_country_code):
         """Load and process IPCC region mapping data."""
         print("Loading IPCC region mapping data...")
-        regions = pd.read_excel(os.path.join(settings.DATA_DIR,iso_country_code), sheet_name="Full_mapping")
+        regions = pd.read_excel(iso_country_code, sheet_name="Full_mapping")
         regions = regions[['Intermediate level (10)', 'ISO codes']]
         regions.rename(columns={'Intermediate level (10)': 'IPCC_Region_Intermediate', 'ISO codes': 'ISO3'}, inplace=True)
         expanded_regions = []
@@ -46,17 +54,17 @@ class LoadData:
         return pd.DataFrame(expanded_regions)
 
     @staticmethod
-    def load_eu_g20_mapping(DATA_DIR, iso_country_code):
+    def load_eu_g20_mapping(iso_country_code):
         """Load EU and G20 country mappings."""
         print("Loading EU and G20 country mappings...")
-        mapping = pd.read_excel(os.path.join(DATA_DIR,iso_country_code), sheet_name="G20_EU_Countries ", header=0)
+        mapping = pd.read_excel(iso_country_code, sheet_name="G20_EU_Countries ", header=0)
         return mapping[['ISO3', 'EU_country', 'G20_country']]
 
     @staticmethod
-    def load_historical_population_data(DATA_DIR, co2_emission_territory):
+    def load_historical_population_data(co2_emission_territory):
         """Load and process historical population data from emissions data."""
         print("Loading historical population data...")
-        emissions = pd.read_excel(os.path.join(DATA_DIR,co2_emission_territory), sheet_name="GCB2024v17_MtCO2_flat")
+        emissions = pd.read_excel(co2_emission_territory, sheet_name="GCB2024v17_MtCO2_flat")
         emissions = emissions[['Country', 'ISO 3166-1 alpha-3', 'Year', 'Total', 'Per Capita']]
         emissions.rename(columns={
             'ISO 3166-1 alpha-3': 'ISO3',
@@ -67,34 +75,24 @@ class LoadData:
         return emissions[['ISO3', 'Country', 'Year', 'Population']]
 
     @staticmethod
-    def load_forecasted_population_data(DATA_DIR, population_timeline):
+    def load_forecasted_population_data(population_timeline):
         """Load and process forecasted population data for 2050."""
         print("Loading forecasted population data...")
-        pop = pd.read_excel(os.path.join(DATA_DIR,population_timeline), sheet_name="unpopulation_dataportal_2025042")
+        pop = pd.read_excel(population_timeline, sheet_name="unpopulation_dataportal_2025042")
         pop = pop[['Iso3', 'Location', 'Time', 'Value']]
         pop.rename(columns={'Iso3': 'ISO3', 'Location': 'Country', 'Time': 'Year', 'Value': 'Population'}, inplace=True)
         return pop[pop['Year'] == 2050]
 
     @staticmethod
-    def load_emissions_data(DATA_DIR, co2_emission_territory):
+    def load_emissions_data(co2_emission_territory):
         """Load and process CO2 emissions data."""
         print("Loading CO2 emissions data...")
-        emissions = pd.read_excel(os.path.join(DATA_DIR,co2_emission_territory), sheet_name="GCB2024v17_MtCO2_flat")
+        emissions = pd.read_excel(co2_emission_territory, sheet_name="GCB2024v17_MtCO2_flat")
         emissions = emissions[['Country', 'ISO 3166-1 alpha-3', 'Year', 'Total']]
         emissions.rename(columns={'ISO 3166-1 alpha-3': 'ISO3', 'Total': 'Annual_CO2_emissions_Mt'}, inplace=True)
         return emissions
 
     @staticmethod
-    def load_consumption_emissions_data(DATA_DIR, co2_emission_consumption):
+    def load_consumption_emissions_data(co2_emission_consumption):
         """Load and process consumption emissions data."""
         print("Loading consumption emissions data...")
-        cons_emissions = pd.read_excel(os.path.join(DATA_DIR,co2_emission_consumption), sheet_name="GCB2024v17_MtCO2_flat")
-        cons_emissions = cons_emissions[['Country', 'ISO 3166-1 alpha-3', 'Year', 'CO2_Consumption_emissions in Mt']]
-        cons_emissions.rename(columns={
-            'ISO 3166-1 alpha-3': 'ISO3',
-            'CO2_Consumption_emissions in Mt': 'Annual_CO2_emissions_Mt'
-        }, inplace=True)
-        cons_emissions['Annual_CO2_emissions_Mt'] = cons_emissions['Annual_CO2_emissions_Mt'].apply(
-            lambda x: float(str(x).replace(',', '.')) if isinstance(x, str) else float(x)
-        ).round(2)
-        return cons_emissions
