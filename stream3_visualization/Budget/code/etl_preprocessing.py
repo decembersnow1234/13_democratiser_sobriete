@@ -1,8 +1,14 @@
 import pandas as pd
+import sys
+import os
+
+# Add the parent directory to the path (using raw string for the file path)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), r'..')))
+from config import filenames, budget_parameters
+
+
 from utils.io import LoadData, DataAnalysis
 from config import settings
-
-
 
 def run_etl_preprocessing(DATA_DIR, OUTPUT_DIR, iso_code_map, iso_country_code, carbon_neutrality_timeline,
                            gdp_ppp_constant, population_timeline, co2_emission_territory, co2_emission_consumption):
