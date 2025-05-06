@@ -1,76 +1,79 @@
-# main.py
+import os
 import pandas as pd
-from utils.io import LoadData, DataAnalysis
-from config import settings
 
-df = pd.read_csv(f"{DATA_DIR}/{co2_emission_territory}")
-targets = LoadData.load_current_targets()
-base_df = DataAnalysis.create_base_dataframe(df)
+from code import file_handler
+from config import OUTPUT_DIR
+from code.etl_preprocess import ETLProcessor
+from code.combined_data_processor import CombinedDataProcessor
+from code.scenario_generator import ScenarioGenerator
+from code.forecast_processor import ForecastProcessor
+from code.viz_co2_forecast import VisualizationDataProcessor
+from code.upload import DatabaseUploader
 
-combined = read_csv("combined_data.csv")
-forecast = read_csv("forecast_data.csv")
-parameters = read_csv("scenario_parameters.csv")
+def process_etl_pipeline():
+    """Run the ETL data preprocessing pipeline."""
+    print("🚀 Running ETL preprocessing...")
+    etl = ETLProcessor()
+    processed_data = etl.preprocess()
+    
+    combined_processor = CombinedDataProcessor()
+    final_data = combined_processor.process_combined_data()
 
-# Example usage:
-budget = get_global_budget("1.5°C", "50%", "Lamboll")
-print("Global 1.5°C 50% budget (Lamboll):", budget)
+    print("✅ ETL processing completed!")
+    return final_data
 
+def generate_forecast():
+    """Generate forecast scenarios."""
+    print("🚀 Generating forecast scenarios...")
+    base_df = LoadData.read_csv("base_data.csv")
+    current_targets = LoadData.read_csv("current_targets.csv").set_index("ISO2").to_dict()
 
+    scenario_gen = ScenarioGenerator(base_df, current_targets)
+    scenarios_df = scenario_gen.generate_scenarios()
 
+    forecast_df = ForecastProcessor.generate_forecast(scenarios_df)
+    
+    print("✅ Scenario forecast generation completed!")
+    return forecast_df
 
-history, forecast, parameters = import_data()
-if None in (history, forecast, parameters):
-    return
+def process_visualization_data():
+    """Merge historical and forecast data for visualization."""
+    print("🚀 Processing visualization data...")
+    combined_data = read_csv("combined_data.csv")
+    forecast_data = read_csv("forecast_data.csv")
+    parameters = read_csv("scenario_parameters.csv")
 
-print(f"Emission History after import: {history.columns}")
-    print(f"Forecast after import: {forecast.columns}")
-    print(f"Parameters after import: {parameters.columns}")
+    viz_processor = VisualizationDataProcessor(combined_data, forecast_data, parameters)
+    final_data = viz_processor.process()
 
-    history2, forecast2, parameters2 = reshape_data(history, forecast, parameters)
+    print("✅ Visualization data processing completed!")
+    return final_data
 
-    print(f"Emission History after reshape: {history2.columns}")
-    print(f"Forecast after reshape: {forecast2.columns}")
-    print(f"Parameters after reshape: {parameters2.columns}")
+def upload_data():
+    """Upload processed data to the database."""
+    print("🚀 Uploading data to the database...")
+    uploader = DatabaseUploader()
 
-    merged = parameters2.merge(forecast2, how="outer", on=["scenario_id"])
-    to_be_concat = [merged, history2]
-    result = concat(to_be_concat)
+    file_table_mapping = {
+        "combined_data.csv": "Viz_Carbon_Budget_combined_data_historical_Thao",
+        "scenario_parameters.csv": "Viz_Carbon_Budget_scenario_parameters_Thao",
+        "forecast_data.csv": "Viz_Carbon_Budget_forecast_data_Thao",
+        "viz_history_forecast_data.csv": "Viz_Carbon_Budget_history_forecast_data_Thao"
+    }
 
-    print(f"Viz history forecast: {result.columns}")
+    uploader.upload_multiple(file_table_mapping)
+    print("✅ Data upload completed!")
 
-    categorical_cols = ['Warming_scenario', 'Probability_of_reach',
-                        'Budget_source', 'Budget_distribution_scenario', "Neutrality_year"]
-
-    for col in categorical_cols:
-        if col in result.columns:
-            result[col] = result[col].astype(str).str.strip()
-
-    result.to_csv(os.path.join(OUTPUT_DIR, "viz_history_forecast_data.csv"), index=False)
-    print("viz_history_forecast.csv ready")
-
-if __name__ == "__main__":
-    main()
-
-from processing.emissions import reshape_and_merge
-from db.uploader import run_upload
-
-if __name__ == "__main__":
-    print("🚀 Starting data pipeline...")
-    reshape_and_merge()
-    run_upload()
-    print("✅ Pipeline complete.")
-
-from data.etl_processing import process_emissions
-from data.etl_scenarios import process_scenario_forecasts
-from data.merge_history_forecast import reshape_and_merge
-from data.upload import upload_all
-
-if __name__ == "__main__":
+def run_full_pipeline():
+    """Run the complete carbon budget data pipeline."""
     print("🚀 Starting full carbon budget data pipeline...")
+    
+    etl_data = process_etl_pipeline()
+    forecast_data = generate_forecast()
+    visualization_data = process_visualization_data()
+    upload_data()
 
-    process_emissions()
-    process_scenario_forecasts()
-    reshape_and_merge()
-    upload_all()
+    print("✅ Full pipeline execution completed!")
 
-    print("✅ Pipeline completed successfully.")
+if __name__ == "__main__":
+    run_full_pipeline()
